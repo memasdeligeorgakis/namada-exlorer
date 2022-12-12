@@ -1,5 +1,6 @@
 mod utils;
 
+use async_trait::async_trait;
 use borsh::*;
 use namada::ledger::masp::ShieldedUtils;
 use namada::types::token::Transfer;
@@ -15,6 +16,8 @@ struct TransactionInBlock {
 }
 
 struct WebShieldedUtils;
+
+#[async_trait]
 impl ShieldedUtils for WebShieldedUtils {
     fn client(&self) -> Self::C {
         // Murisi will change this to be called something like
@@ -64,6 +67,10 @@ impl ShieldedUtils for WebShieldedUtils {
         T: BorshDeserialize,
     {
         // check out what this does
+
+        // Murisis implementation does this so, we should replicate this
+        // let client = HttpClient::new(self.ledger_address.clone().unwrap()).unwrap();
+        // query_storage_value::<T>(&client, &key).await;
         !unimplemented!("??")
     }
 
@@ -95,4 +102,6 @@ static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 #[wasm_bindgen]
 extern "C" {
     fn alert(s: &str);
+    async fn get_local_prover() -> Result<[u8], JsValue>;
+    async fn query_storage_value(storageKey: String) -> Result<[u8], JsValue>;
 }
